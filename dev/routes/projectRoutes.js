@@ -5,7 +5,7 @@ const {
   setProject,
   updateProject,
   deleteProject,
-} = require("../controller/projectsController");
+} = require("../controller/projectController");
 
 router.route("/").get(getProjects).post(setProject);
 router.route("/:id").put(updateProject).delete(deleteProject);
