@@ -65,7 +65,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 
   if (!user) {
     res.status(400);
-    throw new Error("Project not found.");
+    throw new Error("User not found.");
   }
 
   res.status(200).json({ id: req.params.id });
