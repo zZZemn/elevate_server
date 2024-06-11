@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
+const bcrypt = require('bcrypt');
 const User = require("../models/userModel");
+
+const userLogin = asyncHandler(async (req, res) => {
+  const user = await User.findByUsernameAndPassword;
+});
 
 const getUsers = asyncHandler(async (req, res) => {
   const users = await User.find();
@@ -27,6 +32,7 @@ const getUser = asyncHandler(async (req, res) => {
 const setUser = asyncHandler(async (req, res) => {
   if (
     !req.body.username ||
+    !req.body.password ||
     !req.body.firstName ||
     !req.body.lastName ||
     !req.body.profession
@@ -36,6 +42,7 @@ const setUser = asyncHandler(async (req, res) => {
   } else {
     const user = await User.create({
       username: req.body.username,
+      password: req.body.password,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       profession: req.body.profession,
