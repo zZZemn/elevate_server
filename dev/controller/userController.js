@@ -1,10 +1,26 @@
 const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 const User = require("../models/userModel");
 
 const userLogin = asyncHandler(async (req, res) => {
-  const user = await User.findByUsernameAndPassword;
+  const inputUsername = req.body.username;
+  const inputPassword = req.body.password;
+
+  const user = await User.findOne({ username: inputUsername });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("Invalid username");
+  }
+
+  const isPwMatch = await bcrypt.compare(inputPassword, user.password);
+  if (!isPwMatch) {
+    res.status(400);
+    throw new Error("Wrong password");
+  }
+
+  res.status(200).json(user);
 });
 
 const getUsers = asyncHandler(async (req, res) => {
@@ -40,9 +56,11 @@ const setUser = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Some fields are required.");
   } else {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
     const user = await User.create({
       username: req.body.username,
-      password: req.body.password,
+      password: hashedPassword,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       profession: req.body.profession,
@@ -79,6 +97,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
+  userLogin,
   getUsers,
   getUser,
   setUser,
