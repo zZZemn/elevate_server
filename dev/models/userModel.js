@@ -10,6 +10,10 @@ const userSchema = mongoose.Schema(
       type: String,
       required: [true, "Please add password"],
     },
+    email: {
+      type: String,
+      required: [true, "Please add email"],
+    },
     firstName: {
       type: String,
       required: [true, "Please add first name"],
@@ -21,6 +25,10 @@ const userSchema = mongoose.Schema(
     profession: {
       type: String,
       required: [true, "Please add profession"],
+    },
+    picture: {
+      type: String,
+      required: [true, "Please add picture"],
     },
   },
   {

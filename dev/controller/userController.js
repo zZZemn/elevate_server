@@ -49,25 +49,40 @@ const setUser = asyncHandler(async (req, res) => {
   if (
     !req.body.username ||
     !req.body.password ||
+    !req.body.email ||
     !req.body.firstName ||
     !req.body.lastName ||
     !req.body.profession
   ) {
     res.status(400);
     throw new Error("Some fields are required.");
-  } else {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
-    const user = await User.create({
-      username: req.body.username,
-      password: hashedPassword,
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      profession: req.body.profession,
-    });
-
-    res.status(200).json(user);
   }
+
+  const inputUsername = await User.findOne({ username: req.body.username });
+  if (inputUsername) {
+    res.status(400);
+    throw new Error("Username already exists.");
+  }
+
+  const inputEmail = await User.findOne({ email: req.body.email });
+  if (inputEmail) {
+    res.status(400);
+    throw new Error("Email already exists.");
+  }
+
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+  const user = await User.create({
+    username: inputUsername,
+    password: hashedPassword,
+    email: inputEmail,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    profession: req.body.profession,
+    picture: process.env.DEF_PROFILE,
+  });
+
+  res.status(200).json(user);
 });
 
 const updateUser = asyncHandler(async (req, res) => {
