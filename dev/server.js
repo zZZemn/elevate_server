@@ -14,6 +14,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/api/project", require("./routes/projectRoutes"));
 app.use("/api/user", require("./routes/userRoutes"));
+app.use("/api/profession", require("./routes/professionRoutes"));
 
 app.use(errorHandler);
 
