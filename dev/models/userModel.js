@@ -30,6 +30,10 @@ const userSchema = mongoose.Schema(
       type: String,
       required: [true, "Please add picture"],
     },
+    userType: {
+      type: String,
+      required: [true, "Please add user type"],
+    },
   },
   {
     timestamps: true,

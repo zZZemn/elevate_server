@@ -80,6 +80,7 @@ const setUser = asyncHandler(async (req, res) => {
     lastName: req.body.lastName,
     profession: req.body.profession,
     picture: process.env.DEF_PROFILE,
+    userType: "Creator",
   });
 
   res.status(200).json(user);
