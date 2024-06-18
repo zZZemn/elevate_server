@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const postPicsSchema = mongoose.Schema(
+const postPicSchema = mongoose.Schema(
   {
     postId: {
       type: String,
@@ -16,4 +16,4 @@ const postPicsSchema = mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("PostPics", postPicsSchema);
+module.exports = mongoose.model("PostPic", postPicSchema);
