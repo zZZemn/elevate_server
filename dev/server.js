@@ -1,7 +1,12 @@
 const express = require("express");
 const colors = require("colors");
 const dotenv = require("dotenv").config();
+const mongoose = require("mongoose");
+const multer = require("multer");
+const path = require("path");
+
 const { errorHandler } = require("./middleware/errorMiddleware");
+
 const connectDB = require("./config/db");
 const port = process.env.PORT;
 
@@ -16,6 +21,7 @@ app.use("/api/project", require("./routes/projectRoutes"));
 app.use("/api/user", require("./routes/userRoutes"));
 app.use("/api/profession", require("./routes/professionRoutes"));
 app.use("/api/post", require("./routes/postRoutes"));
+app.use("/uploads", express.static("uploads"));
 
 app.use(errorHandler);
 
