@@ -8,13 +8,29 @@ const postContent = asyncHandler(async (req, res) => {
     throw new Error("Please add caption.");
   }
 
+  if (!req.files) {
+    res.status(400);
+    throw new Error("Please upload photo.");
+  }
+
   const post = await Post.create({
     caption: req.body.caption,
   });
 
-  res.status(200).json(post);
+  const postPicPromises = req.files.map((file) => {
+    return PostPic.create({
+      postId: post._id,
+      url: `/uploads/${file.filename}`,
+    });
+  });
+  await Promise.all(postPicPromises);
 
-  console.log("ID: " + post._id);
+  const postPics = await PostPic.find({ postId: post._id });
+
+  res.status(200).json({
+    post: post,
+    images: postPics,
+  });
 });
 
 module.exports = { postContent };
