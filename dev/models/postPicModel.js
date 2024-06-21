@@ -3,8 +3,9 @@ const mongoose = require("mongoose");
 const postPicSchema = mongoose.Schema(
   {
     postId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       required: [true, "Please add post id"],
+      ref: "Post",
     },
     url: {
       type: String,

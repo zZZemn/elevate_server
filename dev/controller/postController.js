@@ -33,4 +33,51 @@ const postContent = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { postContent };
+const getAllPost = asyncHandler(async (req, res) => {
+  const posts = await Post.aggregate([
+    {
+      $lookup: {
+        from: "postpics",
+        localField: "_id",
+        foreignField: "postId",
+        as: "images",
+      },
+    },
+    {
+      $project: {
+        caption: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        images: 1,
+      },
+    },
+  ]);
+
+  res.status(200).json(posts);
+});
+
+module.exports = { postContent, getAllPost };
+
+const sample = {
+  _id: "6672a235e9fd4d904c5c99ff",
+  caption: "My recent works 2024",
+  createdAt: "2024-06-19T09:17:41.544+00:00",
+  updatedAt: "2024-06-19T09:17:41.544+00:00",
+  pictures: [
+    {
+      _id: "6672a236e9fd4d904c5c9a01",
+      postId: "6672a235e9fd4d904c5c99ff",
+      url: "/uploads/1718788661523.png",
+    },
+    {
+      _id: "6672a236e9fd4d904c5c9a01",
+      postId: "6672a235e9fd4d904c5c99ff",
+      url: "/uploads/1718788661523.png",
+    },
+    {
+      _id: "6672a236e9fd4d904c5c9a01",
+      postId: "6672a235e9fd4d904c5c99ff",
+      url: "/uploads/1718788661523.png",
+    },
+  ],
+};
