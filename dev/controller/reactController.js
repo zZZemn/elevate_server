@@ -38,18 +38,49 @@ const insertReaction = asyncHandler(async (req, res) => {
     throw new Error("Please add reaction");
   }
 
-  if (req.body.reaction > 4 || req.body.reaction < 1) {
+  if (
+    !Number(req.body.reaction || req.body.reaction > 4 || req.body.reaction < 1)
+  ) {
     res.status(400);
     throw new Error("Invalid reaction");
   }
 
-  const react = await React.create({
+  const existingReaction = await React.findOne({
     userId: req.body.userId,
     postId: req.body.postId,
-    reaction: req.body.reaction,
   });
 
-  res.status(200).json(react);
+  if (existingReaction) {
+    const reactionId = existingReaction._id;
+
+    if (req.body.reaction == existingReaction.reaction) {
+      const deleteReaction = await React.findByIdAndDelete(reactionId);
+      if (!deleteReaction) {
+        res.status(400);
+        throw new Error("Something went wrong");
+      }
+
+      res.status(200).json({ message: "reaction removed" });
+    } else {
+      const updateReaction = await React.findByIdAndUpdate(
+        reactionId,
+        { reaction: req.body.reaction },
+        { new: true }
+      );
+
+      res
+        .status(200)
+        .json({ message: "reaction updated", data: updateReaction });
+    }
+  } else {
+    const react = await React.create({
+      userId: req.body.userId,
+      postId: req.body.postId,
+      reaction: req.body.reaction,
+    });
+
+    res.status(200).json({ message: "reaction added", data: react });
+  }
 });
 
 module.exports = { insertReaction };
