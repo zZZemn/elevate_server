@@ -83,7 +83,22 @@ const insertReaction = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { insertReaction };
+const getReactionsByPostId = asyncHandler(async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    res.status(400);
+    throw new Error("Invalid post id");
+  }
+
+  const reactions = await React.find({ postId: req.params.id });
+  if (!reactions) {
+    res.status(400);
+    throw new Error("No reaction found");
+  }
+
+  res.status(200).json(reactions);
+});
+
+module.exports = { insertReaction, getReactionsByPostId };
 
 //   1  - Like
 //   2  - Love
