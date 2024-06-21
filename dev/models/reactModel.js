@@ -11,8 +11,8 @@ const reactSchema = mongoose.Schema(
       required: [true, "Please add post id"],
     },
     reaction: {
-      type: String,
-      required: [true, "Please add post id"],
+      type: Number,
+      required: [true, "Please add reaction"],
     },
   },
   {

@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
-const Comment = require("../models/commentModel");
+const React = require("../models/reactModel");
 const User = require("../models/userModel");
 const Post = require("../models/postModel");
 
-const addComment = asyncHandler(async (req, res) => {
+const insertReaction = asyncHandler(async (req, res) => {
   if (!req.body.userId) {
     res.status(400);
     throw new Error("Please add user id");
@@ -33,18 +33,28 @@ const addComment = asyncHandler(async (req, res) => {
     }
   }
 
-  if (!req.body.comment) {
+  if (!req.body.reaction) {
     res.status(400);
-    throw new Error("Please add comment.");
+    throw new Error("Please add reaction");
   }
 
-  const comment = await Comment.create({
+  if (req.body.reaction > 4 || req.body.reaction < 1) {
+    res.status(400);
+    throw new Error("Invalid reaction");
+  }
+
+  const react = await React.create({
     userId: req.body.userId,
     postId: req.body.postId,
-    comment: req.body.comment,
+    reaction: req.body.reaction,
   });
 
-  res.status(200).json(comment);
+  res.status(200).json(react);
 });
 
-module.exports = { addComment };
+module.exports = { insertReaction };
+
+//   1  - Like
+//   2  - Love
+//   3  - Wow
+//   4  - Support
