@@ -47,4 +47,14 @@ const addComment = asyncHandler(async (req, res) => {
   res.status(200).json(comment);
 });
 
-module.exports = { addComment };
+const getCommentByPostId = asyncHandler(async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    res.status(400);
+    throw new Error("Invalid post id");
+  }
+
+  const comments = await Comment.find({ postId: req.params.id });
+  res.status(200).json(comments);
+});
+
+module.exports = { addComment, getCommentByPostId };
