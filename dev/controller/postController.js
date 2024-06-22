@@ -57,6 +57,14 @@ const getAllPost = asyncHandler(async (req, res) => {
   const posts = await Post.aggregate([
     {
       $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "postedBy",
+      },
+    },
+    {
+      $lookup: {
         from: "postpics",
         localField: "_id",
         foreignField: "postId",
@@ -64,11 +72,22 @@ const getAllPost = asyncHandler(async (req, res) => {
       },
     },
     {
+      $unwind: "$postedBy",
+    },
+    {
       $project: {
         caption: 1,
         createdAt: 1,
         updatedAt: 1,
         images: 1,
+        "postedBy._id": 1,
+        "postedBy.username": 1,
+        "postedBy.email": 1,
+        "postedBy.firstName": 1,
+        "postedBy.lastName": 1,
+        "postedBy.profession": 1,
+        "postedBy.picture": 1,
+        "postedBy.userType": 1,
       },
     },
   ]);
@@ -77,4 +96,3 @@ const getAllPost = asyncHandler(async (req, res) => {
 });
 
 module.exports = { postContent, getAllPost };
-
