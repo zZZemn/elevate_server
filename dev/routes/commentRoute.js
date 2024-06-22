@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 const {
   addComment,
-  getCommentByPostId,
+  getCommentsByPostId,
 } = require("../controller/commentController");
 
 router.route("/").post(addComment);
-router.route("/:id").get(getCommentByPostId);
+router.route("/:id").get(getCommentsByPostId);
 
 module.exports = router;

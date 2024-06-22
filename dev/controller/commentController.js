@@ -47,14 +47,18 @@ const addComment = asyncHandler(async (req, res) => {
   res.status(200).json(comment);
 });
 
-const getCommentByPostId = asyncHandler(async (req, res) => {
+const getCommentsByPostId = asyncHandler(async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     res.status(400);
     throw new Error("Invalid post id");
   }
 
   const comments = await Comment.find({ postId: req.params.id });
+  if (!comments) {
+    res.status(400);
+    throw new Error("No comment found");
+  }
   res.status(200).json(comments);
 });
 
-module.exports = { addComment, getCommentByPostId };
+module.exports = { addComment, getCommentsByPostId };
