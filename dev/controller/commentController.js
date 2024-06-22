@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const Comment = require("../models/commentModel");
 const User = require("../models/userModel");
 const Post = require("../models/postModel");
+const ObjectId = mongoose.Types.ObjectId;
 
 const addComment = asyncHandler(async (req, res) => {
   if (!req.body.userId) {
@@ -53,11 +54,39 @@ const getCommentsByPostId = asyncHandler(async (req, res) => {
     throw new Error("Invalid post id");
   }
 
-  const comments = await Comment.find({ postId: req.params.id });
-  if (!comments) {
-    res.status(400);
-    throw new Error("No comment found");
-  }
+  const postId = new ObjectId(req.params.id);
+
+  const comments = await Comment.aggregate([
+    {
+      $match: { postId: postId },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "commentedBy",
+      },
+    },
+    {
+      $unwind: "$commentedBy",
+    },
+    {
+      $project: {
+        comment: 1,
+        "commentedBy._id": 1,
+        "commentedBy.username": 1,
+        "commentedBy.email": 1,
+        "commentedBy.firstName": 1,
+        "commentedBy.lastName": 1,
+        "commentedBy.profession": 1,
+        "commentedBy.picture": 1,
+        "commentedBy.userType": 1,
+      },
+    },
+  ]);
+
+  console.log(req.params.id);
   res.status(200).json(comments);
 });
 
