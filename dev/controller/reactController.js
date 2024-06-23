@@ -110,6 +110,8 @@ const getReactionsByPostId = asyncHandler(async (req, res) => {
     {
       $project: {
         reaction: 1,
+        createdAt: 1,
+        updatedAt: 1,
         "reactBy._id": 1,
         "reactBy.username": 1,
         "reactBy.email": 1,

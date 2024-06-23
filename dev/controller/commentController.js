@@ -74,6 +74,8 @@ const getCommentsByPostId = asyncHandler(async (req, res) => {
     {
       $project: {
         comment: 1,
+        createdAt: 1,
+        updatedAt: 1,
         "commentedBy._id": 1,
         "commentedBy.username": 1,
         "commentedBy.email": 1,
