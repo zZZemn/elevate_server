@@ -3,12 +3,14 @@ const mongoose = require("mongoose");
 const reactSchema = mongoose.Schema(
   {
     userId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       required: [true, "Please add user id"],
+      ref: "User",
     },
     postId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       required: [true, "Please add post id"],
+      ref: "Post",
     },
     reaction: {
       type: Number,

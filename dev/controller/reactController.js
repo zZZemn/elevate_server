@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const React = require("../models/reactModel");
 const User = require("../models/userModel");
 const Post = require("../models/postModel");
+const ObjectId = mongoose.Types.ObjectId;
 
 const insertReaction = asyncHandler(async (req, res) => {
   if (!req.body.userId) {
@@ -89,11 +90,37 @@ const getReactionsByPostId = asyncHandler(async (req, res) => {
     throw new Error("Invalid post id");
   }
 
-  const reactions = await React.find({ postId: req.params.id });
-  if (!reactions) {
-    res.status(400);
-    throw new Error("No reaction found");
-  }
+  const postId = new ObjectId(req.params.id);
+
+  const reactions = await React.aggregate([
+    {
+      $match: { postId: postId },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "reactBy",
+      },
+    },
+    {
+      $unwind: "$reactBy",
+    },
+    {
+      $project: {
+        reaction: 1,
+        "reactBy._id": 1,
+        "reactBy.username": 1,
+        "reactBy.email": 1,
+        "reactBy.firstName": 1,
+        "reactBy.lastName": 1,
+        "reactBy.profession": 1,
+        "reactBy.picture": 1,
+        "reactBy.userType": 1,
+      },
+    },
+  ]);
 
   res.status(200).json(reactions);
 });
