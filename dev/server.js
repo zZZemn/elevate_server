@@ -4,6 +4,7 @@ const dotenv = require("dotenv").config();
 const mongoose = require("mongoose");
 const multer = require("multer");
 const path = require("path");
+const cors = require("cors");
 
 const { errorHandler } = require("./middleware/errorMiddleware");
 
@@ -13,6 +14,8 @@ const port = process.env.PORT;
 connectDB();
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
