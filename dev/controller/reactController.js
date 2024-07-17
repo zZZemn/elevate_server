@@ -127,7 +127,43 @@ const getReactionsByPostId = asyncHandler(async (req, res) => {
   res.status(200).json(reactions);
 });
 
-module.exports = { insertReaction, getReactionsByPostId };
+const checkPostReaction = asyncHandler(async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.postId)) {
+    res.status(400);
+    throw new Error("Invalid post id");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(req.params.userId)) {
+    res.status(400);
+    throw new Error("Invalid user id");
+  }
+
+  const postId = new ObjectId(req.params.postId);
+  const userId = new ObjectId(req.params.userId);
+
+  const existingReaction = await React.findOne({
+    userId: userId,
+    postId: postId,
+  });
+
+  const response = {
+    reacted: "",
+  };
+
+  if (existingReaction) {
+    response.reacted = true;
+  } else {
+    response.reacted = false;
+  }
+
+  res.status(200).json(response);
+});
+
+module.exports = {
+  insertReaction,
+  getReactionsByPostId,
+  checkPostReaction,
+};
 
 //   1  - Like
 //   2  - Love
