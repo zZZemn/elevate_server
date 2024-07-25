@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const Post = require("../models/postModel");
 const PostPic = require("../models/postPicModel");
 const User = require("../models/userModel");
+const ObjectId = mongoose.Types.ObjectId;
 
 const postContent = asyncHandler(async (req, res) => {
   if (!req.body.userId) {
@@ -95,4 +96,56 @@ const getAllPost = asyncHandler(async (req, res) => {
   res.status(200).json(posts);
 });
 
-module.exports = { postContent, getAllPost };
+const getPostByUserId = asyncHandler(async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.userId)) {
+    res.status(400);
+    throw new Error("Invalid user id");
+  }
+
+  const userId = new ObjectId(req.params.userId);
+
+  const posts = await Post.aggregate([
+    {
+      $match: { userId: userId },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "postedBy",
+      },
+    },
+    {
+      $lookup: {
+        from: "postpics",
+        localField: "_id",
+        foreignField: "postId",
+        as: "images",
+      },
+    },
+    {
+      $unwind: "$postedBy",
+    },
+    {
+      $project: {
+        caption: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        images: 1,
+        "postedBy._id": 1,
+        "postedBy.username": 1,
+        "postedBy.email": 1,
+        "postedBy.firstName": 1,
+        "postedBy.lastName": 1,
+        "postedBy.profession": 1,
+        "postedBy.picture": 1,
+        "postedBy.userType": 1,
+      },
+    },
+  ]);
+
+  res.status(200).json(posts);
+});
+
+module.exports = { postContent, getAllPost, getPostByUserId };
