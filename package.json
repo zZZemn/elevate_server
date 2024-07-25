@@ -5,7 +5,7 @@
   "main": "dev/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
+    "start": "node dev/server.js",
     "server": "nodemon dev/server.js"
   },
   "author": "Emmanuel Ugaban",
