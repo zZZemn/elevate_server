@@ -45,6 +45,19 @@ const getUser = asyncHandler(async (req, res) => {
   }
 });
 
+const getUserByUsername = asyncHandler(async (req, res) => {
+  const user = await User.findOne({ username: req.params.username }).select(
+    "-password"
+  );
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found.");
+  }
+
+  res.status(200).json(user);
+});
+
 const setUser = asyncHandler(async (req, res) => {
   if (
     !req.body.username ||
@@ -119,4 +132,5 @@ module.exports = {
   setUser,
   updateUser,
   deleteUser,
+  getUserByUsername,
 };
