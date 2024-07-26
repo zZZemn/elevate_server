@@ -148,4 +148,56 @@ const getPostByUserId = asyncHandler(async (req, res) => {
   res.status(200).json(posts);
 });
 
-module.exports = { postContent, getAllPost, getPostByUserId };
+const getPostByPostId = asyncHandler(async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.postId)) {
+    res.status(400);
+    throw new Error("Invalid user id");
+  }
+
+  const postId = new ObjectId(req.params.postId);
+
+  const posts = await Post.aggregate([
+    {
+      $match: { _id: postId },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "postedBy",
+      },
+    },
+    {
+      $lookup: {
+        from: "postpics",
+        localField: "_id",
+        foreignField: "postId",
+        as: "images",
+      },
+    },
+    {
+      $unwind: "$postedBy",
+    },
+    {
+      $project: {
+        caption: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        images: 1,
+        "postedBy._id": 1,
+        "postedBy.username": 1,
+        "postedBy.email": 1,
+        "postedBy.firstName": 1,
+        "postedBy.lastName": 1,
+        "postedBy.profession": 1,
+        "postedBy.picture": 1,
+        "postedBy.userType": 1,
+      },
+    },
+  ]);
+
+  res.status(200).json(posts);
+});
+
+module.exports = { postContent, getAllPost, getPostByUserId, getPostByPostId };
